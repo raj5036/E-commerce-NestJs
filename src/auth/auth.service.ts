@@ -1,5 +1,5 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { AuthDTO } from './dto';
+import { LoginDTO, RegisterDTO } from './dto';
 import * as argon from 'argon2';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
@@ -7,20 +7,40 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 @Injectable()
 export class AuthService {
 	constructor(private prisma: PrismaService) {}
-	async login(authDTO: AuthDTO) {
-		console.log(authDTO);
-		return 'login';
+	async login(loginDTO: LoginDTO) {
+		try {
+			const { email, password } = loginDTO;
+			const user = await this.prisma.user.findUnique({
+				where: {
+					email
+				}
+			});
+
+			if (!user) {
+				throw new ForbiddenException('Credentials incorrect');
+			}
+
+			const pwMatches = await argon.verify(user.password, password);
+			if (!pwMatches) {
+				throw new ForbiddenException('Credentials incorrect');
+			}
+
+			return user;
+		} catch (error) {
+			throw error;
+		}
 	}	
 
-	async register(authDTO: AuthDTO) {
+	async register(registerDTO: RegisterDTO) {
 		try {
-			const hashedPassword = await argon.hash(authDTO.password);
+			const { email, password, firstname, lastname } = registerDTO;
+			const hashedPassword = await argon.hash(password);
 			const newUser = await this.prisma.user.create({
 				data: {
-					email: authDTO.email,
+					email,
 					password: hashedPassword,
-					firstname: authDTO.firstname,
-					lastname: authDTO.lastname,
+					firstname,
+					lastname,
 				}, 
 				select: {
 					id: true,
