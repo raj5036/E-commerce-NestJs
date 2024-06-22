@@ -10,6 +10,6 @@ export class AuthService {
 
 	async register(authDTO: AuthDTO) {
 		console.log(authDTO);
-		return 'register';
+		return 'register1';
 	}
 }
