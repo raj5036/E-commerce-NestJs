@@ -31,20 +31,21 @@ model User {
 }
 
 model Product {
-  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  id            String  @id @default(auto()) @map("_id") @db.ObjectId
 
-  user      User    @relation(fields: [userId], references: [id])
-  userId    String  @db.ObjectId
+  user          User    @relation(fields: [userId], references: [id])
+  userId        String  @db.ObjectId
 
-  Order     Order?  @relation(fields: [orderId], references: [id])
-  orderId   String? @default("") @db.ObjectId
+  Order         Order?  @relation(fields: [orderId], references: [id])
+  orderId       String? @default("") @db.ObjectId
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  name      String
-  details   String
-  price     String
+  name          String
+  description   String?
+  price         String
+  image         String?
 
   @@map("products")
 }
