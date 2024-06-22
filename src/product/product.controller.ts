@@ -2,6 +2,8 @@ import { Body, Controller, Delete, Get, Patch, Post, UseGuards } from '@nestjs/c
 import { AddProductDTO } from './dto';
 import { ProductService } from './product.service';
 import { JWTGuard } from 'src/auth/guard';
+import { GetUser } from 'src/auth/decorator';
+import { User } from '@prisma/client';
 
 @UseGuards(JWTGuard)
 @Controller('product')
@@ -9,8 +11,8 @@ export class ProductController {
 	constructor(private productService: ProductService) {}
 
 	@Post('add')
-	addProduct(@Body() dto: AddProductDTO) {
-		return this.productService.addProduct(dto);
+	addProduct(@Body() dto: AddProductDTO,  @GetUser() user: User) {
+		return this.productService.addProduct(dto, user);
 	}
 
 	@Get('all')

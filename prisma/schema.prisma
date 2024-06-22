@@ -37,7 +37,7 @@ model Product {
   userId        String  @db.ObjectId
 
   Order         Order?  @relation(fields: [orderId], references: [id])
-  orderId       String? @default("") @db.ObjectId
+  orderId       String? @db.ObjectId
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
