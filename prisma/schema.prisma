@@ -14,15 +14,69 @@ datasource db {
 }
 
 model User {
-  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  email     String    @unique
+  password  String
+  firstname String
+  lastname  String
+  Product   Product[]
+  Order     Order[]
+  Payment   Payment[]
+
+  @@map("users")
+}
+
+model Product {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+
+  user      User    @relation(fields: [userId], references: [id])
+  userId    String  @db.ObjectId
+
+  Order     Order?  @relation(fields: [orderId], references: [id])
+  orderId   String? @default("") @db.ObjectId
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  email   String   @unique
-  password  String
-  firstname   String
-  lastname    String      
+  name      String
+  details   String
+  price     String
 
-  @@map("users")
+  @@map("products")
+}
+
+model Order {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  user          User      @relation(fields: [userId], references: [id])
+  userId        String    @db.ObjectId
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  product       Product[]
+  price         String
+  isPaymentDone Boolean   @default(false)
+
+  payment Payment?
+
+  @@map("orders")
+}
+
+model Payment {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String    @db.ObjectId
+  
+  order     Order     @relation(fields: [orderId], references: [id])
+  orderId   String    @unique @db.ObjectId
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("payments")
 }
