@@ -4,7 +4,7 @@ import { ProductService } from './product.service';
 import { JWTGuard } from 'src/auth/guard';
 import { GetUser } from 'src/auth/decorator';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { ProductIdGuard } from './guard';
+import { ProductAvailabilityGuard, ProductIdValidationGuard } from './guard';
 @UseGuards(JWTGuard)
 @Controller('product')
 export class ProductController {
@@ -23,19 +23,21 @@ export class ProductController {
 		return this.productService.getProductsByUser(userId);
 	}
 
-	@UseGuards(ProductIdGuard)
+	@UseGuards(ProductIdValidationGuard)
 	@Get(':productId')
 	getOneProduct(@Param('productId') productId: string) {
 		return this.productService.getProductByProductId(productId);
 	}
 
-	@UseGuards(ProductIdGuard)
+	@UseGuards(ProductIdValidationGuard)
+	@UseGuards(ProductAvailabilityGuard)
 	@Patch(':productId')
 	updateProduct(@Param('productId') productId: string, @Body() dto: ProductDTO) {
 		return this.productService.updateProduct(productId, dto);
 	}
 
-	@UseGuards(ProductIdGuard)
+	@UseGuards(ProductIdValidationGuard)
+	@UseGuards(ProductAvailabilityGuard)
 	@Delete(':productId')
 	deleteProduct(@Param('productId') productId: string) {
 		return this.productService.deleteProduct(productId);

@@ -31,7 +31,7 @@ export class ProductService {
 		try {
 			const products = await this.prisma.product.findMany({
 				where: {
-					userId
+					userId,
 				},
 			})
 			return products;
@@ -73,13 +73,15 @@ export class ProductService {
 
 	async deleteProduct(productId: string) {
 		try {
-			const product = await this.prisma.product.delete({
+			await this.prisma.product.delete({
 				where: {
 					id: productId
-				}
+				},
 			})
 
-			return product
+			return {
+				message: 'Product deleted successfully'
+			}
 		} catch (error) {
 			throw error;
 		}
