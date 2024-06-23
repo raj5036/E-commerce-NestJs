@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AddProductDTO, GetProductDTO } from './dto';
+import { AddProductDTO } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -27,9 +27,8 @@ export class ProductService {
 			throw error;
 		}
 	}
-	async getProducts(dto: GetProductDTO, userId: string) {
+	async getProductsByUser(userId: string) {
 		try {
-			// const { id } = dto;
 			const products = await this.prisma.product.findMany({
 				where: {
 					userId
@@ -41,4 +40,17 @@ export class ProductService {
 		}
 	}
 
+	async getProductByProductId(productId: string) {
+		try {
+			const product = await this.prisma.product.findUnique({
+				where: {
+					id: productId
+				}
+			})
+			
+			return {product};
+		} catch (error) {
+			throw error;
+		}
+	}
 }

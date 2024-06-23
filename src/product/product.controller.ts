@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Patch, Post, UseGuards } from '@nestjs/common';
-import { AddProductDTO, GetProductDTO } from './dto';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { AddProductDTO } from './dto';
 import { ProductService } from './product.service';
 import { JWTGuard } from 'src/auth/guard';
 import { GetUser } from 'src/auth/decorator';
@@ -15,8 +15,13 @@ export class ProductController {
 	}
 
 	@Get('all')
-	getAllProductsByUser(@Body() dto: GetProductDTO, @GetUser('id') userId: string) {
-		return this.productService.getProducts(dto, userId);
+	getAllProductsByUser(@GetUser('id') userId: string) {
+		return this.productService.getProductsByUser(userId);
+	}
+
+	@Get(':productId')
+	getOneProduct(@Param('productId') productId: string) {
+		return this.productService.getProductByProductId(productId);
 	}
 
 	@Patch('update')
