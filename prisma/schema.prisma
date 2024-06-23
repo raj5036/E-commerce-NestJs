@@ -23,7 +23,7 @@ model User {
   password  String
   firstname String
   lastname  String
-  role      Int
+  role      String
   Product   Product[]
   Order     Order[]
   Payment   Payment[]

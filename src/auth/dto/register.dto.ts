@@ -1,4 +1,5 @@
-import { IsEmail, IsNotEmpty, IsString } from "class-validator";
+import { IsEmail, IsIn, IsNotEmpty, IsString } from "class-validator";
+import { USER_ROLES } from "src/user/utils";
 
 export class RegisterDTO {
 	@IsEmail()
@@ -16,4 +17,11 @@ export class RegisterDTO {
 	@IsString()
 	@IsNotEmpty()
 	lastname: string;
+
+	@IsString()
+	@IsNotEmpty()
+	@IsIn([USER_ROLES.ADMIN, USER_ROLES.USER], {
+		message: `role must be one of ${USER_ROLES.ADMIN} or ${USER_ROLES.USER}`,
+	})
+	role: string
 }

@@ -24,7 +24,7 @@ export class JWTStrategy extends PassportStrategy(Strategy, 'jwt') {
 				id: payload.sub
 			}
 		})
-
+		console.log('user in jwt', user)
 		delete user.password
 		return user
 	}
