@@ -38,9 +38,6 @@ model Product {
   user   User   @relation(fields: [userId], references: [id])
   userId String @db.ObjectId
 
-  Order   Order?  @relation(fields: [orderId], references: [id])
-  orderId String? @db.ObjectId
-
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
@@ -62,10 +59,9 @@ model Order {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  product        Product[]
+  products        String[]
   price          String
-  discount       String
-  discountCoupon String
+  couponCode String
   isPaymentDone  Boolean   @default(false)
 
   payment Payment?

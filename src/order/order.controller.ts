@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { JWTGuard } from 'src/auth/guard';
 import { GetUser } from 'src/auth/decorator';
@@ -15,22 +15,22 @@ export class OrderController {
 	}
 
 	@Get('getAll')
-	getAll () {
-		return this.orderService.getAll();
+	getAll (@GetUser('id') userId: string) {
+		return this.orderService.getAll(userId);
 	}
 
 	@Get(':orderId')
-	getOne () {
-		return this.orderService.getOne();
+	getOne (@Param('orderId') orderId: string) {
+		return this.orderService.getOne(orderId);
 	}
 
-	@Post('update')
-	update () {
-		return this.orderService.update();
+	@Post('update/:orderId')
+	update (@Param('orderId') orderId: string, @Body() dto: OrderDTO) {
+		return this.orderService.update(orderId, dto);
 	}
 
-	@Post('delete')
-	delete () {
-		return this.orderService.delete();
+	@Post('delete/:orderId')
+	delete (@Param('orderId') orderId: string) {
+		return this.orderService.delete(orderId);
 	}
 }

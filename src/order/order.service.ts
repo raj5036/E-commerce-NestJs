@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { OrderDTO } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class OrderService {
@@ -9,30 +10,90 @@ export class OrderService {
 	) {}
 	async create (userId: string, dto: OrderDTO) {
 		try {
-			const newOrder = await this.prisma.order.create({
+			const {price, couponCode, products} = dto;
+			const order = await this.prisma.order.create({
 				data: {
-					...dto,
+					price,
+					couponCode,
+					products,
 					userId
 				}
 			})
+
+			return {order}
 		} catch (error) {
 			throw new Error(error)
 		}
 	}
 
-	async getAll () {
-		return `This action returns all order`;
+	async getAll (userId: string) {
+		try {
+			const orders = await this.prisma.order.findMany({
+				where: {
+					userId
+				}
+			})
+			return {orders}
+		} catch (error) {
+			throw new Error(error)
+		}
 	}
 
-	async getOne () {
-		return `This action returns one order`;
+	async getOne (orderId: string) {
+		try {
+			const order = await this.prisma.order.findUnique({
+				where: {
+					id: orderId
+				}
+			})
+			return {order}
+		} catch (error) {
+			throw new Error(error)
+		}
 	}
 
-	async update () {
-		return `This action updates an order`;
+	async update (orderId: string, dto: OrderDTO) {
+		try {
+			const {price, couponCode, products} = dto;
+			const order = await this.prisma.order.update({
+				where: {
+					id: orderId
+				},
+				data: {
+					price,
+					couponCode,
+					products
+				}
+			})
+
+			return {order}
+		} catch (error) {
+			if (error.code === 'P2025') {
+				return {
+					success: false,
+					message: 'Order not found'
+				}
+			}
+			throw new Error(error)	
+		}
 	}
 
-	async delete () {
-		return `This action removes an order`;
+	async delete (orderId: string) {
+		try {
+			await this.prisma.order.delete({
+				where: {
+					id: orderId
+				}
+			})
+		} catch (error) {
+			if (error instanceof PrismaClientKnownRequestError) {
+				if (error.code === 'P2025') {
+					return {
+						success: false,
+						message: 'Order not found'
+					}
+				}
+			}
+		}
 	}
 }
