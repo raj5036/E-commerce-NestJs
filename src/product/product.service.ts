@@ -45,7 +45,6 @@ export class ProductService {
 			const product = await this.prisma.product.findUnique({
 				where: {
 					id: productId,
-					deletedAt: undefined || null
 				}
 			})
 			
@@ -64,9 +63,9 @@ export class ProductService {
 				data: {
 					...dto
 				}
-			})	
+			});	
 
-			return product
+			return product;
 		} catch (error) {
 			throw error;
 		}
@@ -78,11 +77,11 @@ export class ProductService {
 				where: {
 					id: productId
 				}
-			})
+			});
 
 			return {
 				message: 'Product deleted successfully'
-			}
+			};
 		} catch (error) {
 			throw error;
 		}

@@ -3,14 +3,12 @@ import { ProductDTO } from './dto';
 import { ProductService } from './product.service';
 import { JWTGuard } from 'src/auth/guard';
 import { GetUser } from 'src/auth/decorator';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { ProductAvailabilityGuard, ProductIdValidationGuard } from './guard';
 @UseGuards(JWTGuard)
 @Controller('product')
 export class ProductController {
 	constructor(
 		private productService: ProductService,
-		private prisma: PrismaService,
 	) {}
 
 	@Post('add')
