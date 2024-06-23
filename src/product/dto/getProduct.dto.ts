@@ -1,3 +1,3 @@
 export class GetProductDTO {
-	id: string;
+	productId: string;
 }
