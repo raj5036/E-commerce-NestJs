@@ -41,6 +41,7 @@ model Product {
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
 
   name          String
   description   String?
@@ -57,6 +58,7 @@ model Order {
 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
 
   product       Product[]
   price         String

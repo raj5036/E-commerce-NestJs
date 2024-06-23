@@ -7,13 +7,17 @@ export class ProductAvailabilityGuard implements CanActivate{
 	async canActivate(context: ExecutionContext): Promise<boolean>{
 		const request = context.switchToHttp().getRequest();
 		const productId = request.params.productId;
+
+		// Check if Product exists in Database
 		const product = await this.prisma.product.findUnique({
 			where: {
-				id: productId
+				id: productId,
+				userId: request.user.id,
+				deletedAt: null || undefined
 			}
 		})
-		console.log('product', product)
 		
+		request.product = product
 		return product != null;
 	}
 }

@@ -31,7 +31,7 @@ export class ProductService {
 		try {
 			const products = await this.prisma.product.findMany({
 				where: {
-					userId,
+					userId
 				},
 			})
 			return products;
@@ -44,7 +44,8 @@ export class ProductService {
 		try {
 			const product = await this.prisma.product.findUnique({
 				where: {
-					id: productId
+					id: productId,
+					deletedAt: undefined || null
 				}
 			})
 			
@@ -76,7 +77,7 @@ export class ProductService {
 			await this.prisma.product.delete({
 				where: {
 					id: productId
-				},
+				}
 			})
 
 			return {
