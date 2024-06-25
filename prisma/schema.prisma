@@ -61,7 +61,7 @@ model Order {
 
   products        String[]
   price          String
-  couponCode String
+  couponCode String?
   isPaymentDone  Boolean   @default(false)
 
   payment Payment?
