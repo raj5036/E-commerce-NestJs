@@ -24,6 +24,8 @@ export class CouponValidityGuard implements CanActivate {
 				message: 'Coupon not found'
 			});
 		}
-		return true
+
+		request.coupon = coupon;
+		return true;
 	}
 }

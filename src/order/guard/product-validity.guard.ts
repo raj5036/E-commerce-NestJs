@@ -23,6 +23,7 @@ export class ProductValidityGuard implements CanActivate {
 				})
 			}
 		}
+		
 		return true;
 	}
 }

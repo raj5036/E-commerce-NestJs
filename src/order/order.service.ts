@@ -2,26 +2,23 @@ import { Injectable } from '@nestjs/common';
 import { OrderDTO } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { DiscountCoupon } from '@prisma/client';
 
 @Injectable()
 export class OrderService {
 	constructor(
 		private prisma: PrismaService
 	) {}
-	async create (userId: string, dto: OrderDTO) {
+
+	async create (userId: string, dto: OrderDTO, coupon: DiscountCoupon) {
 		try {
 			const { couponCode, products, price } = dto;
 			
 			let orderPrice = price;
-			if (couponCode) {
-				const coupon = await this.prisma.discountCoupon.findUnique({
-					where: {
-						code: couponCode
-					}
-				})
-
-				// Apply coupon
-				orderPrice = (this.parseOrderPrice(price) - (this.parseOrderPrice(price) * coupon.discount) / 100).toString();
+			
+			// Apply coupon
+			if (coupon) {
+				orderPrice = this.getDiscountedPrice(this.parseOrderPrice(price), coupon.discount).toString();
 			}
 
 			// Create Order
@@ -66,16 +63,21 @@ export class OrderService {
 		}
 	}
 
-	async update (orderId: string, dto: OrderDTO) {
+	async update (orderId: string, dto: OrderDTO, coupon: DiscountCoupon) {
 		try {
 			const {price, couponCode, products} = dto;
+			let orderPrice = price;
+			// console.log('coupon', couponCode, coupon)
+			if (coupon) {
+				orderPrice = this.getDiscountedPrice(this.parseOrderPrice(price), coupon.discount).toString();
+			}
 			const order = await this.prisma.order.update({
 				where: {
 					id: orderId
 				},
 				data: {
-					price,
-					couponCode,
+					price: `${orderPrice} ${this.parseOrderCurrency(price)}`,
+					couponCode: couponCode || null,
 					products
 				}
 			})
@@ -126,5 +128,9 @@ export class OrderService {
 
 	parseOrderCurrency (price: string): string { // price: 'number INR'
 		return price.split(' ')[1]
+	}
+
+	getDiscountedPrice (price: number, discount: number): number {
+		return price - (price * discount) / 100
 	}
 }
