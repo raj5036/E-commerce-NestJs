@@ -38,7 +38,7 @@ export class AuthService {
 				token: await this.signToken(user.id, user.email)
 			};
 		} catch (error) {
-			throw error;
+			return {error};
 		}
 	}	
 

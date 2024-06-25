@@ -10,10 +10,46 @@ export class OrderService {
 	) {}
 	async create (userId: string, dto: OrderDTO) {
 		try {
-			const {price, couponCode, products} = dto;
+			const { couponCode, products, price } = dto;
+			
+			// Check if Product exists in Database
+			for (const product of products) {
+				const productExists = await this.prisma.product.findUnique({
+					where: {
+						id: product.productId
+					}
+				})
+				if (!productExists) {
+					return {
+						success: false,
+						message: 'Invalid Product Ids Provided'
+					}
+				}
+			}
+
+			// Check if Coupon exists in Database
+			let orderPrice = price;
+			if (couponCode) {
+				const coupon = await this.prisma.discountCoupon.findUnique({
+					where: {
+						code: couponCode
+					}
+				})
+				if (!coupon) {
+					return {
+						success: false,
+						message: 'Coupon not found'
+					}
+				}
+
+				// Apply coupon
+				orderPrice = (this.parseOrderPrice(price) - (this.parseOrderPrice(price) * coupon.discount) / 100).toString();
+			}
+
+			// Create Order
 			const order = await this.prisma.order.create({
 				data: {
-					price,
+					price: `${orderPrice} ${this.parseOrderCurrency(price)}`,
 					couponCode,
 					products,
 					userId
@@ -95,5 +131,13 @@ export class OrderService {
 				}
 			}
 		}
+	}
+
+	parseOrderPrice (price: string): number { // price: 'number INR'
+		return Number(price.split(' ')[0])
+	}
+
+	parseOrderCurrency (price: string): string { // price: 'number INR'
+		return price.split(' ')[1]
 	}
 }
