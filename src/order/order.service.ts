@@ -130,7 +130,7 @@ export class OrderService {
 		return price.split(' ')[1]
 	}
 
-	getDiscountedPrice (price: number, discount: number): number {
+	getDiscountedPrice (price: number, discount: number): number { // Get discounted price
 		return price - (price * discount) / 100
 	}
 }
