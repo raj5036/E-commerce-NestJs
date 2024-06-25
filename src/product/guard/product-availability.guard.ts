@@ -1,4 +1,4 @@
-import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
+import { CanActivate, ExecutionContext, Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
@@ -16,8 +16,13 @@ export class ProductAvailabilityGuard implements CanActivate{
 				deletedAt: null || undefined
 			}
 		})
+
+		// Throw error if Product doesn't exist
+		if (!product) {
+			throw new NotFoundException('Product not found');
+		}
 		
 		request.product = product
-		return product != null;
+		return true;
 	}
 }
