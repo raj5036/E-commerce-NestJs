@@ -12,22 +12,6 @@ export class OrderService {
 		try {
 			const { couponCode, products, price } = dto;
 			
-			// Check if Product exists in Database
-			for (const product of products) {
-				const productExists = await this.prisma.product.findUnique({
-					where: {
-						id: product.productId
-					}
-				})
-				if (!productExists) {
-					return {
-						success: false,
-						message: 'Invalid Product Ids Provided'
-					}
-				}
-			}
-
-			// Check if Coupon exists in Database
 			let orderPrice = price;
 			if (couponCode) {
 				const coupon = await this.prisma.discountCoupon.findUnique({
@@ -35,12 +19,6 @@ export class OrderService {
 						code: couponCode
 					}
 				})
-				if (!coupon) {
-					return {
-						success: false,
-						message: 'Coupon not found'
-					}
-				}
 
 				// Apply coupon
 				orderPrice = (this.parseOrderPrice(price) - (this.parseOrderPrice(price) * coupon.discount) / 100).toString();
@@ -102,7 +80,11 @@ export class OrderService {
 				}
 			})
 
-			return {order}
+			return {
+				success: true,
+				message: 'Order updated successfully',
+				order
+			}
 		} catch (error) {
 			if (error.code === 'P2025') {
 				return {
@@ -121,6 +103,11 @@ export class OrderService {
 					id: orderId
 				}
 			})
+
+			return {
+				success: true,
+				message: 'Order deleted successfully'
+			}
 		} catch (error) {
 			if (error instanceof PrismaClientKnownRequestError) {
 				if (error.code === 'P2025') {

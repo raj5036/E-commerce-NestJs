@@ -1,4 +1,4 @@
-import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
+import { CanActivate, ExecutionContext, Injectable, NotFoundException } from "@nestjs/common";
 import { Observable } from "rxjs";
 
 @Injectable()
@@ -9,6 +9,14 @@ export class ProductIdValidationGuard implements CanActivate {
 	canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
 		const request = context.switchToHttp().getRequest();
 		const productId = request.params.productId;
-		return productId && this.isValidObjectId(productId);
+		const result = productId && this.isValidObjectId(productId);
+
+		if (!result) {
+			throw new NotFoundException({
+				success: false,
+				message: 'Invalid Product Id'
+			});
+		}
+		return true;
 	}
 }

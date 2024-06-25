@@ -19,7 +19,10 @@ export class ProductAvailabilityGuard implements CanActivate{
 
 		// Throw error if Product doesn't exist
 		if (!product) {
-			throw new NotFoundException('Product not found');
+			throw new NotFoundException({
+				success: false,
+				message: 'Product not found',
+			});
 		}
 		
 		request.product = product
