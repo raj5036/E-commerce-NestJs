@@ -5,11 +5,11 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class PrismaService extends PrismaClient {
-	constructor(private configService: ConfigService) {
+	constructor(configService: ConfigService) {
 		super({
 			datasources: {
 				db: {
-					url: configService.get('DATABASE_URL'),
+					url: configService.get<string>('DATABASE_URL'),
 				},
 			}
 		});

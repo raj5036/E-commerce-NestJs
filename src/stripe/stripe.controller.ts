@@ -1,6 +1,9 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { StripeService } from './stripe.service';
+import { JWTGuard } from 'src/auth/guard';
+import { PaymentDTO } from './dto';
 
+@UseGuards(JWTGuard)
 @Controller('stripe')
 export class StripeController {
 	constructor(
@@ -8,7 +11,8 @@ export class StripeController {
 	) {}
 
 	@Post('create-payment-intent')
-	async createPaymentIntent(@Body('amount') amount: number, @Body('currency') currency: string) {
+	async createPaymentIntent(@Body() dto: PaymentDTO) {
+		const { amount, currency } = dto;
 		return this.stripeService.createPaymentIntent(amount, currency);
 	}
 }
