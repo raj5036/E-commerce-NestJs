@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as fs from 'fs';
-// import * as path from 'path';
 
 async function bootstrap() {
   const httpsOptions = {
@@ -19,6 +18,6 @@ async function bootstrap() {
   }))
   await app.listen(process.env.PORT);
 
-  console.log(`Application is running on: ${process.env.HOST}:${process.env.PORT}`);
+  console.log(`Application is running on ${process.env.HOST}: ${process.env.PORT}`);
 }
 bootstrap();
