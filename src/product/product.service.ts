@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ProductDTO } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class ProductService {
@@ -25,15 +24,7 @@ export class ProductService {
 			})
 			return newProduct;
 		} catch (error) {
-			if (error instanceof PrismaClientKnownRequestError) {
-				if (error.code === 'P2002') {
-					return {
-						success: false,
-						message: 'Product with this name already exists'
-					}
-				}
-			}
-			return {error};
+			return this.prisma.errorHandler(error);
 		}
 	}
 	async getProductsByUser(userId: string) {
@@ -45,7 +36,7 @@ export class ProductService {
 			})
 			return products;
 		} catch (error) {
-			return {error};
+			return this.prisma.errorHandler(error);
 		}
 	}
 
@@ -59,7 +50,7 @@ export class ProductService {
 			
 			return {product};
 		} catch (error) {
-			return {error};
+			return this.prisma.errorHandler(error);
 		}
 	}
 
@@ -76,7 +67,7 @@ export class ProductService {
 
 			return product;
 		} catch (error) {
-			return {error};
+			return this.prisma.errorHandler(error);
 		}
 	}
 
@@ -92,7 +83,7 @@ export class ProductService {
 				message: 'Product deleted successfully'
 			};
 		} catch (error) {
-			 return {error};
+			 return this.prisma.errorHandler(error);
 		}
 	}
 }

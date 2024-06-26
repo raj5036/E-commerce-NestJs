@@ -2,7 +2,6 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { LoginDTO, RegisterDTO } from './dto';
 import * as argon from 'argon2';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
@@ -38,7 +37,7 @@ export class AuthService {
 				token: await this.signToken(user.id, user.email)
 			};
 		} catch (error) {
-			return {error};
+			return this.prisma.errorHandler(error);
 		}
 	}	
 
@@ -65,15 +64,7 @@ export class AuthService {
 				token: await this.signToken(newUser.id, newUser.email)
 			};
 		} catch (error) {
-			if (error instanceof PrismaClientKnownRequestError) {
-				if (error.code === 'P2002') {
-					throw new ForbiddenException('Credentials taken');
-				} else if (error.code === 'P2003') {
-					throw new ForbiddenException('Credentials taken');
-				}
-			}
-
-			throw error
+			return this.prisma.errorHandler(error);
 		}
 	}
 

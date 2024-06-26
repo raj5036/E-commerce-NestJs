@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CouponDTO } from './dto';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class CouponService {
@@ -10,7 +9,12 @@ export class CouponService {
 	) {}
 
 	async getAll() {
-		return this.prisma.discountCoupon.findMany();
+		try {
+			const coupons = await this.prisma.discountCoupon.findMany();
+			return {coupons};
+		} catch (error) {
+			return this.prisma.errorHandler(error);
+		}
 	}
 
 	async create (dto: CouponDTO, userId: string) {
@@ -23,15 +27,7 @@ export class CouponService {
 			})
 			return {coupon};	
 		} catch (error) {
-			if (error instanceof PrismaClientKnownRequestError) {
-				if (error.code === 'P2002') {
-					return {
-						success: false,
-						message: 'Coupon already exists'
-					}
-				}
-			}	
-			throw new Error(error)
+			return this.prisma.errorHandler(error);
 		}
 	}
 
@@ -49,7 +45,7 @@ export class CouponService {
 
 			return updatedCoupon
 		} catch (error) {
-			console.log(error)
+			return this.prisma.errorHandler(error)
 		}
 	}
 
@@ -66,15 +62,7 @@ export class CouponService {
 				message: "Coupon deleted successfully"
 			}
 		} catch (error) {
-			if (error instanceof PrismaClientKnownRequestError) {
-				if (error.code === 'P2025') {
-					return {
-						success: false,
-						message: 'Coupon not found'
-					}
-				}
-			}
-			throw new Error(error)
+			return this.prisma.errorHandler(error)
 		}
 	}
 }

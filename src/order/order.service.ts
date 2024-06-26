@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { OrderDTO } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { DiscountCoupon } from '@prisma/client';
 
 @Injectable()
@@ -33,7 +32,7 @@ export class OrderService {
 
 			return {order}
 		} catch (error) {
-			throw new Error(error)
+			return this.prisma.errorHandler(error)
 		}
 	}
 
@@ -46,7 +45,7 @@ export class OrderService {
 			})
 			return {orders}
 		} catch (error) {
-			throw new Error(error)
+			return this.prisma.errorHandler(error)
 		}
 	}
 
@@ -59,7 +58,7 @@ export class OrderService {
 			})
 			return {order}
 		} catch (error) {
-			throw new Error(error)
+			return this.prisma.errorHandler(error)
 		}
 	}
 
@@ -88,13 +87,7 @@ export class OrderService {
 				order
 			}
 		} catch (error) {
-			if (error.code === 'P2025') {
-				return {
-					success: false,
-					message: 'Order not found'
-				}
-			}
-			throw new Error(error)	
+			return this.prisma.errorHandler(error)
 		}
 	}
 
@@ -111,14 +104,7 @@ export class OrderService {
 				message: 'Order deleted successfully'
 			}
 		} catch (error) {
-			if (error instanceof PrismaClientKnownRequestError) {
-				if (error.code === 'P2025') {
-					return {
-						success: false,
-						message: 'Order not found'
-					}
-				}
-			}
+			return this.prisma.errorHandler(error)
 		}
 	}
 
