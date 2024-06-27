@@ -1,15 +1,14 @@
 import { CanActivate, ExecutionContext, Injectable, NotFoundException } from "@nestjs/common";
 import { Observable } from "rxjs";
+import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
 export class ProductIdValidationGuard implements CanActivate {
-	isValidObjectId (id: string): boolean {
-		return /^[0-9a-fA-F]{24}$/.test(id);
-	}
+	constructor(private prisma: PrismaService) {}
 	canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
 		const request = context.switchToHttp().getRequest();
 		const productId = request.params.productId;
-		const result = productId && this.isValidObjectId(productId);
+		const result = productId && this.prisma.isValidObjectId(productId);
 
 		if (!result) {
 			throw new NotFoundException({

@@ -16,6 +16,11 @@ export class PrismaService extends PrismaClient {
 		// console.log('mongoDB url', configService.get('DATABASE_URL'));
 	}
 
+	
+	isValidObjectId (id: string): boolean {
+		return /^[0-9a-fA-F]{24}$/.test(id);
+	}
+
 	errorHandler = (error) => {
 		if (error instanceof PrismaClientKnownRequestError) {
 			if (error.code === 'P2002') {

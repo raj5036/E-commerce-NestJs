@@ -9,9 +9,20 @@ import { ProductModule } from './product/product.module';
 import { OrderModule } from './order/order.module';
 import { CouponModule } from './coupon/coupon.module';
 import { StripeModule } from './stripe/stripe.module';
+import { LogisticsModule } from './logistics/logistics.module';
 
 @Module({
-  imports: [UserModule, AuthModule, PrismaModule, ConfigModule.forRoot({isGlobal: true}), ProductModule, OrderModule, CouponModule, StripeModule],
+  imports: [
+    ConfigModule.forRoot({isGlobal: true}),
+    UserModule, 
+    AuthModule, 
+    PrismaModule, 
+    ProductModule, 
+    OrderModule, 
+    CouponModule, 
+    StripeModule, 
+    LogisticsModule
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
