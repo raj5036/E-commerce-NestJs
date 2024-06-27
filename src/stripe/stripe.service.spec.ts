@@ -29,8 +29,8 @@ describe('StripeService', () => {
   });
 
   it('should create a payment intent', async () => {
-    const amount = 2000; // $20.00
-    const currency = 'usd';
+    const amount = 2000; 
+    const currency = 'inr';
 
     const mockResponse: stripe.Stripe.PaymentIntent = {
       id: 'pi_test',
