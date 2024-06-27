@@ -105,3 +105,17 @@ type ProductOrder {
   price       String
   quantity    Int
 }
+
+model Shipment {
+  id             String     @id @default(auto()) @map("_id") @db.ObjectId
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  trackingNumber  String    @unique
+  orderId         String
+  isDelivered     Boolean   @default(false)
+  isCanceled      Boolean   @default(false)
+
+  @@map("shipments")
+}
