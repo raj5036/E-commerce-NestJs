@@ -14,6 +14,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { ThrottlerLimitDetail } from '@nestjs/throttler/dist/throttler.guard.interface';
 import { DomainService } from './domain/domain.service';
 import { DomainModule } from './domain/domain.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Injectable()
 export class CustomThrottlerGuard extends ThrottlerGuard {
@@ -38,7 +39,9 @@ export class CustomThrottlerGuard extends ThrottlerGuard {
     OrderModule, 
     CouponModule, 
     StripeModule, 
-    LogisticsModule, DomainModule
+    LogisticsModule, 
+    DomainModule,
+    HttpModule
   ],
   controllers: [AppController],
   providers: [
