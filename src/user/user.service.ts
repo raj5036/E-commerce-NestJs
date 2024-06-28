@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { USER_ROLES } from './utils';
 
 @Injectable()
 export class UserService {
@@ -21,6 +22,20 @@ export class UserService {
 				success: true,
 				user
 			}
+		} catch (error) {
+			return this.prisma.errorHandler(error);
+		}
+	}
+
+	async getAll () {
+		try {
+			console.log('here');
+			const users = await this.prisma.user.findMany({
+				where: {
+					role: USER_ROLES.USER
+				}
+			});
+			return {users};
 		} catch (error) {
 			return this.prisma.errorHandler(error);
 		}
