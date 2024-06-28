@@ -17,6 +17,19 @@ export class CouponService {
 		}
 	}
 
+	async getOne (code: string) {
+		try {
+			const coupon = await this.prisma.discountCoupon.findUnique({
+				where: {
+					code
+				}
+			})
+			return coupon;
+		} catch (error) {
+			return this.prisma.errorHandler(error);
+		}
+	}
+
 	async create (dto: CouponDTO, userId: string) {
 		try {
 			const coupon = await this.prisma.discountCoupon.create({

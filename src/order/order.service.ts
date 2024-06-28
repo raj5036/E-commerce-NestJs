@@ -1,22 +1,37 @@
 import { Injectable } from '@nestjs/common';
-import { OrderDTO } from './dto';
+import { OrderDTO, ProductOrderDTO } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { DiscountCoupon } from '@prisma/client';
+import { CouponService } from 'src/coupon/coupon.service';
 
 @Injectable()
 export class OrderService {
 	constructor(
-		private prisma: PrismaService
+		private prisma: PrismaService,
+		private couponService: CouponService,
 	) {}
 
-	async create (userId: string, dto: OrderDTO, coupon: DiscountCoupon) {
+	async create (userId: string, dto: OrderDTO) {
 		try {
 			const { couponCode, products, price } = dto;
+
+			const productsValidity = await this.checkProductValidity(products);
+			if (!productsValidity) {
+				return {
+					success: false,
+					message: 'Invalid Product Ids Provided'
+				};
+			}
 			
 			let orderPrice = price;
-			
-			// Apply coupon
-			if (coupon) {
+			if (couponCode) {
+				const coupon: any = await this.couponService.getOne(couponCode);
+				if (!coupon) {
+					return {
+						success: false,
+						message: 'Invalid Coupon Code Provided'
+					};
+				}	
+
 				orderPrice = this.getDiscountedPrice(this.parseOrderPrice(price), coupon.discount).toString();
 			}
 
@@ -62,14 +77,31 @@ export class OrderService {
 		}
 	}
 
-	async update (orderId: string, dto: OrderDTO, coupon: DiscountCoupon) {
+	async update (orderId: string, dto: OrderDTO) {
 		try {
 			const {price, couponCode, products} = dto;
+
+			const productsValidity = await this.checkProductValidity(products);
+			if (!productsValidity) {
+				return {
+					success: false,
+					message: 'Invalid Product Ids Provided'
+				};
+			}
+
 			let orderPrice = price;
-			// console.log('coupon', couponCode, coupon)
-			if (coupon) {
+			if (couponCode) {
+				const coupon: any = await this.couponService.getOne(couponCode);
+				if (!coupon) {
+					return {
+						success: false,
+						message: 'Invalid Coupon Code Provided'
+					};
+				}	
+				
 				orderPrice = this.getDiscountedPrice(this.parseOrderPrice(price), coupon.discount).toString();
 			}
+
 			const order = await this.prisma.order.update({
 				where: {
 					id: orderId
@@ -118,5 +150,37 @@ export class OrderService {
 
 	getDiscountedPrice (price: number, discount: number): number { // Get discounted price
 		return price - (price * discount) / 100
+	}
+
+	async checkProductValidity (products: ProductOrderDTO[]): Promise<boolean> {
+		const productIds: Array<string> = products.map((product) => product.productId);
+
+		for (const productId of productIds) {
+			const product = await this.prisma.product.findUnique({
+				where: {
+					id: productId
+				}
+			});
+
+			if (!product) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	async checkCouponValidity (couponCode: string): Promise<boolean> {
+		const coupon = await this.prisma.discountCoupon.findUnique({
+			where: {
+				code: couponCode
+			}
+		})
+
+		if (!coupon) {
+			return false;
+		}
+
+		return true;
 	}
 }

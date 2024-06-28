@@ -1,4 +1,4 @@
-import { CanActivate, ExecutionContext, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, CanActivate, ExecutionContext, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
@@ -7,7 +7,14 @@ export class ProductValidityGuard implements CanActivate {
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		const request = context.switchToHttp().getRequest();
-		const productIds: Array<string> = request.body.products.map((product) => product.productId);
+		const products = request.body.products;
+		if (!products) {
+			throw new BadRequestException({
+				success: false,
+				message: 'Products not provided'
+			})
+		}
+		const productIds: Array<string> = products.map((product) => product.productId);
 
 		for (const productId of productIds) {
 			const product = await this.prisma.product.findUnique({
