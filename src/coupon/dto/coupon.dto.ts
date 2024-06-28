@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber, IsString, Max } from "class-validator";
 
 export class CouponDTO {
 	@IsString()
@@ -8,8 +8,11 @@ export class CouponDTO {
 	@IsString()
 	@IsNotEmpty()
 	code: string;
-
+	
 	@IsNumber()
 	@IsNotEmpty()
+	@Max(100, {
+		message: 'Discount percentage cannot be greater than 100'
+	})
 	discount: number;
 }

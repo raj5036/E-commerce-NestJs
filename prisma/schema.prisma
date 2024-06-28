@@ -93,7 +93,7 @@ model DiscountCoupon {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name      String @unique
+  name      String 
   code      String @unique
   discount  Int
 
